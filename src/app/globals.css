@@ -1,0 +1,591 @@
+/* ===============
+ * IMPORTS & FONTS
+ * --------------- */
+
+@import "tailwindcss";
+
+/* ==================
+ * THEME DESIGN TOKEN
+ * ------------------ */
+
+@theme {
+  --color-indigo-brand: #281E73;
+  --color-soleil:       #FFCB46;
+  --color-corail:       #FE4368;
+  --color-abricot:      #F6A564;
+  --color-creme:        #FBE590;
+  --color-lilas:        #8D6EB6;
+  
+  --color-nuit-50:  #F4F3FA;
+  --color-nuit-100: #E7E5F3;
+  --color-nuit-200: #C9C5E2;
+  --color-nuit-300: #A29CC9;
+  --color-nuit-400: #6B6390;
+  --color-nuit-500: #443A8C;
+  --color-nuit-600: #33277E;
+  --color-nuit-700: #281E73;
+  --color-nuit-800: #1E1758;
+  --color-nuit-900: #14103C;
+ 
+  --color-or-50:  #FEF9E9;
+  --color-or-100: #FDF0C8;
+  --color-or-200: #FBE590;
+  --color-or-300: #FFD873;
+  --color-or-400: #FFCB46;
+  --color-or-500: #F0B21F;
+  --color-or-600: #C88E12;
+  --color-or-700: #96690C;
+ 
+  /* Neutres tirés du crème du logo, désaturés pour tenir en pleine page */
+  --color-sable-50:  #FDF8EC;
+  --color-sable-100: #FCF2DE;
+  --color-sable-200: #F6EAD0;
+  --color-sable-300: #E8DCC0;
+  --color-sable-400: #CBBE9F;
+ 
+  /* États — teintés vers la palette, jamais du vert/rouge système */
+  --color-succes:       #266B54;
+  --color-succes-fond:  #E1F0EA;
+  --color-erreur:       #C22348;   /* corail assombri jusqu'au ratio AA */
+  --color-erreur-fond:  #FCE4E9;
+
+  /* Surfaces */
+  --color-page:         var(--color-sable-50);   /* fond général, « ciel » */
+  --color-section:      var(--color-sable-100);  /* section chaude alternée */
+  --color-surface:      #FFFFFF;                 /* carte, panneau */
+  --color-surface-sunk: var(--color-sable-100);  /* champ de formulaire */
+  --color-inverse:      var(--color-nuit-700);   /* section « mer », footer */
+  --color-inverse-deep: var(--color-nuit-800);   /* carte sur fond sombre */
+
+  /* Texte */
+  --color-ink:              var(--color-nuit-700);
+  --color-muted:            var(--color-nuit-400);
+  --color-subtle:           #7C74A0;              /* méta, 16 px minimum */
+  --color-on-inverse:       var(--color-sable-50);
+  --color-on-inverse-muted: var(--color-nuit-200);
+  --color-on-accent:        var(--color-nuit-700); /* texte sur bouton or */
+ 
+  /* Traits */
+  --color-line:         var(--color-sable-300);
+  --color-line-strong:  var(--color-sable-400);
+  --color-line-inverse: #443A8C;
+ 
+  /* Interaction */
+  --color-primary:       var(--color-nuit-700);
+  --color-primary-hover: var(--color-nuit-800);
+  --color-accent:        var(--color-or-400);
+  --color-accent-hover:  var(--color-or-500);
+  --color-accent-soft:   var(--color-or-100);
+  --color-highlight:     var(--color-corail);   /* décor seulement, jamais de texte fin */
+  --color-ring:          var(--color-corail);
+
+  /* Fonts */
+  --font-display: var(--font-bricolage), "Trebuchet MS", sans-serif;
+  --font-sans:    var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+ 
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.16em;
+  --text-eyebrow--font-weight: 600;
+
+  /* radius */
+  --radius-card: 1rem;
+  --radius-pill: 999px;
+
+  /* Duration */
+  --transition-duration-fast:     150ms;
+  --transition-duration-base:     300ms;
+  --transition-duration-slow:     500ms;
+  --transition-duration-slower:   1000ms;
+
+  /* Easing */
+  --ease-out:         cubic-bezier(0,    0,    0.58, 1);
+  --ease-out-smooth:  cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out:      cubic-bezier(0.42, 0,    0.58, 1);
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Animation */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  --animate-fade-in: fadeIn var(--transition-duration-base) var(--ease-out) 0s both;
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(1rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  --animate-fade-in-up: fadeInUp var(--transition-duration-slow) var(--ease-out) 0s both;
+
+  @keyframes revealLTR {
+    from { opacity: 0; --reveal-pos: -20%; }
+    to   { opacity: 1; --reveal-pos: 110%; }
+  }
+  --animate-reveal-ltr: revealLTR 1000ms var(--ease-in-out) 0s both;
+  
+  @keyframes floating {
+    0%, 100% { translate: 0 0;     }
+    40%      { translate: 0 -14px; }
+    70%      { translate: 0 -5px;  }
+  }
+  --animate-floating: floating 7000ms var(--ease-in-out) var(--floating-delay, 0ms) infinite;
+}
+
+/* ===================
+ * ROOT COMPLEXE VALUE
+ * ------------------- */
+
+:root {
+  /* Layout */
+  --shell-max:        80rem;  /* largeur utile maximale du contenu */
+  --shell-pad:        clamp(1rem, 4vw, 2.5rem);
+  --navbar-height:    4.5rem;
+  --navbar-logo-size: 3rem;
+
+  /* Line heights */
+  --lh-tight:         1.1;
+  --lh-snug:          1.3;
+  --lh-normal:        1.6;
+  --lh-loose:         1.75;
+
+    /* Letter spacing */
+  --ls-tightest:      -0.03em;
+  --ls-tighter:       -0.02em;
+  --ls-tight:         -0.01em;
+  --ls-normal:        0;
+  --ls-wide:          0.05em;  /* uppercase eyebrows */
+  --ls-wider:         0.08em;
+  --ls-widest:        0.16em;  /* tracked-out micro labels */
+
+  /* fonts size */
+  --fs-display:       clamp(3rem, 8vw, 6rem);     /* 48–96px — hero titles */
+  --fs-h1:            clamp(2.25rem, 5vw, 4.5rem);/* 36–56px */
+  --fs-h2:            clamp(1.75rem, 3.5vw, 3.5rem);
+  --fs-h3:            1.5rem;   /* 24px */
+  --fs-h4:            1.25rem;  /* 20px */
+  --fs-body:          clamp(0.875rem, 1vw, 1.125rem); /* 14–18px */
+  --fs-caption:       0.75rem;  /* 12px */
+  --fs-eyebrow:       clamp(0.500rem, 1vw, 0.675rem);
+  --fs-xs:            clamp(0.500rem, 1vw, 0.625rem); /* 10px */
+
+  /* fonts weights */
+  --fw-light:         300;
+  --fw-regular:       400;
+  --fw-medium:        500;
+  --fw-semibold:      600;
+  --fw-bold:          700;
+
+  /* complex shadow */
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.35);
+  --shadow-md:   0 4px 6px -1px rgba(0,0,0,0.4),
+                 0 2px 4px -2px rgba(0,0,0,0.3);
+  --shadow-lg:   0 10px 15px -3px rgba(0,0,0,0.5),
+                 0 4px 6px -4px rgba(0,0,0,0.3);
+  --shadow-gold: 0 0 0 4px var(--color-gold-tint-20);
+}
+
+/* ==========
+ * LAYER BASE
+ * ---------- */
+
+@layer base {
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+    h1, h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+ 
+  h3, h4 { font-weight: 600; letter-spacing: -0.005em; }
+  p { text-wrap: pretty; }
+ 
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+ 
+  ::selection {
+    background-color: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+}
+
+/* ===============
+ * LAYER COMPONENT
+ * --------------- */
+
+@layer components {
+  /* Label en arc, façon « Châtelaillon-Plage » du badge */
+  .eyebrow {
+    display: inline-block;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-or-700);
+  }
+  .eyebrow--inverse { color: var(--color-or-300); }
+ 
+  /* Passage d'une section claire à une section « mer » :
+     un filet or surmonté d'un demi-soleil. */
+  .horizon {
+    position: relative;
+    height: 1px;
+    background-color: var(--color-or-400);
+  }
+  .horizon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 84px;
+    height: 42px;
+    transform: translateX(-50%);
+    border-radius: 84px 84px 0 0;
+    background-color: var(--color-or-400);
+  }
+ 
+  /* Barre de navigation principale — logo à gauche, liens à droite. */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: var(--color-page);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    max-width: var(--shell-max);
+    min-height: var(--navbar-height);
+    margin-inline: auto;
+    padding-inline: var(--shell-pad);
+    padding-block: 0.75rem;
+  }
+
+  .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .navbar-logo {
+    width: var(--navbar-logo-size);
+    height: var(--navbar-logo-size);
+    object-fit: contain;
+  }
+
+  .navbar-brand-name {
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    letter-spacing: var(--ls-tight);
+  }
+
+  .navbar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .navbar-link {
+    padding: 0.5rem 0.875rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-medium);
+    color: var(--color-ink);
+    text-decoration: none;
+    transition:
+      background-color var(--transition-duration-fast) var(--ease-out),
+      color var(--transition-duration-fast) var(--ease-out);
+  }
+
+  .navbar-link:hover {
+    background-color: var(--color-accent-soft);
+    color: var(--color-primary);
+  }
+
+  /* Sous 480 px le logo seul suffit : le nom ferait passer les liens à la ligne. */
+  @media (max-width: 30rem) {
+    .navbar-brand-name { display: none; }
+  }
+
+  /* Bouton d'appel à l'action. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-duration-fast) var(--ease-out),
+      color var(--transition-duration-fast) var(--ease-out),
+      translate var(--transition-duration-fast) var(--ease-out);
+  }
+
+  .btn:hover { translate: 0 -2px; }
+
+  .btn--accent {
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .btn--accent:hover { background-color: var(--color-accent-hover); }
+
+  /* ============================================================
+   * Ossature commune à toutes les sections.
+   * Les variantes ne portent QUE les divergences de couleur/décor.
+   * ============================================================ */
+  .section {
+    position: relative;
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    padding-block: 5rem 6rem;
+  }
+
+  /* Première section d'une page : dégage la hauteur de la navbar fixe. */
+  .section--first {
+    padding-block-start: calc(var(--navbar-height) + 4rem);
+  }
+
+  /* Section d'ouverture de l'accueil : porte le halo couchant. */
+  .section--hero {
+    overflow: hidden;
+  }
+
+  /* Halo couchant. Décor pur : jamais de texte posé dessus sans surface. */
+  .section--hero::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: min(90rem, 150%);
+    aspect-ratio: 2 / 1;
+    translate: -50% 40%;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      var(--color-or-200),
+      var(--color-sable-100) 62%,
+      transparent 100%
+    );
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  /* Section « mer » : l'indigo profond. Seules les couleurs changent. */
+  .section--sea {
+    background-color: var(--color-inverse);
+    color: var(--color-on-inverse);
+  }
+
+  .section-inner {
+    position: relative;
+    max-width: var(--shell-max);
+    margin-inline: auto;
+    padding-inline: var(--shell-pad);
+  }
+
+  /* Deux colonnes à partir de 1024 px : contenu à gauche, visuel à droite. */
+  .section-inner--split {
+    display: grid;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    animation: var(--animate-fade-in-up);
+  }
+
+  .section-eyebrow { animation: var(--animate-fade-in); }
+
+  .section-title {
+    font-size: var(--fs-h2);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--ls-tighter);
+    color: inherit;
+  }
+
+  /* Titre de page, pas de section : un cran au-dessus. */
+  .section-title--display { font-size: var(--fs-h1); }
+
+  .section-subtitle {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: var(--fw-medium);
+    line-height: var(--lh-snug);
+    color: var(--color-or-700);
+  }
+
+  .section--sea .section-subtitle { color: var(--color-or-300); }
+
+  .section-lead {
+    max-width: 46ch;
+    font-size: var(--fs-body);
+    line-height: var(--lh-loose);
+    color: var(--color-muted);
+  }
+
+  .section--sea .section-lead { color: var(--color-on-inverse-muted); }
+
+  .section-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.75rem;
+  }
+
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .section-visual {
+    display: flex;
+    justify-content: center;
+    animation: var(--animate-fade-in);
+    animation-delay: var(--transition-duration-base);
+  }
+
+  .section-logo {
+    width: min(100%, 24rem);
+    height: auto;
+    animation: var(--animate-floating);
+  }
+
+  @media (min-width: 64rem) {
+    .section-inner--split {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 4rem;
+    }
+  }
+
+  /* Carte visuelle générique : image en haut, texte en dessous. */
+  .card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    transition:
+      border-color var(--transition-duration-base) var(--ease-out),
+      translate var(--transition-duration-base) var(--ease-out);
+  }
+
+  .card:hover { translate: 0 -4px; }
+
+  .card-media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background-color: var(--color-surface-sunk);
+  }
+
+  .card-image { object-fit: cover; }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    color: var(--color-ink);
+  }
+
+  .card-text {
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+    color: var(--color-muted);
+  }
+
+  /* La carte passe en livrée sombre dès qu'elle est posée sur la mer. */
+  .section--sea .card {
+    background-color: var(--color-inverse-deep);
+    border-color: var(--color-line-inverse);
+  }
+
+  .section--sea .card:hover { border-color: var(--color-accent); }
+
+  .section--sea .card-media { background-color: var(--color-nuit-900); }
+
+  .section--sea .card-title { color: var(--color-on-inverse); }
+
+  .section--sea .card-text { color: var(--color-on-inverse-muted); }
+
+  /* Le bandeau couchant. Une seule occurrence par page. */
+  .couchant {
+    background-image: var(--gradient-couchant);
+    color: var(--color-nuit-700);
+  }
+}
+
+/* ====================
+ * UTILITY TYPO CLASSES
+ * -------------------- */
+
+@utility t-display {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tighter);
+  color: var(--color-fg-1);
+}
+
+/* =============
+ * ACCESSIBILITY
+ * ------------- */
+
+/* Accessibility: respect system presetup */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La Clef Deschamps — Direction artistique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+ --indigo:#281E73; --soleil:#FFCB46; --corail:#FE4368; --abricot:#F6A564; --creme:#FBE590; --lilas:#8D6EB6;
+ --nuit-100:#E7E5F3; --nuit-200:#C9C5E2; --nuit-400:#6B6390; --nuit-800:#1E1758;
+ --or-100:#FDF0C8; --or-300:#FFD873; --or-500:#F0B21F; --or-700:#96690C;
+ --sable-50:#FDF8EC; --sable-100:#FCF2DE; --sable-300:#E8DCC0; --sable-400:#CBBE9F;
+ --subtle:#7C74A0;
+ --sh:0 1px 2px rgba(40,30,115,.05),0 10px 28px -14px rgba(40,30,115,.16);
+ --sh-h:0 2px 6px rgba(40,30,115,.08),0 20px 40px -14px rgba(40,30,115,.24);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--sable-50);color:var(--indigo);font-family:Figtree,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+h1,h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;letter-spacing:-.02em}
+h1{font-size:clamp(2.3rem,5.5vw,3.6rem);line-height:1.02}
+h2{font-size:1.7rem;line-height:1.15}
+h3{font-size:1.05rem;font-weight:600}
+.eyebrow{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--or-700)}
+.eyebrow--inv{color:var(--or-300)}
+.lede{color:var(--nuit-400);max-width:56ch;margin-top:14px;font-size:1.05rem}
+.meta{color:var(--subtle);font-size:.85rem}
+section{padding:60px 0}
+.sep{border-top:1px solid var(--sable-300)}
+
+/* signature : ligne d'horizon */
+.horizon{position:relative;height:1px;background:var(--soleil);margin:0}
+.horizon::after{content:"";position:absolute;left:50%;bottom:0;width:84px;height:42px;transform:translateX(-50%);border-radius:84px 84px 0 0;background:var(--soleil)}
+
+.grid{display:grid;gap:14px;margin-top:26px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(175px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(245px,1fr))}
+.sw{border:1px solid var(--sable-300);border-radius:12px;overflow:hidden;background:#fff}
+.chip{height:82px;display:flex;align-items:flex-end;padding:9px 11px;font-size:.7rem;font-weight:600;letter-spacing:.05em}
+.sw .info{padding:11px 13px}
+.sw .nm{font-size:.86rem;font-weight:600}
+.sw .hx{font-size:.75rem;color:var(--subtle);text-transform:uppercase;font-variant-numeric:tabular-nums}
+.sw .use{font-size:.76rem;color:var(--nuit-400);margin-top:5px}
+.ramp{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--sable-300);margin-top:8px}
+.ramp div{flex:1;height:54px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:600}
+
+.card{background:#fff;border:1px solid var(--sable-300);border-radius:16px;padding:22px;box-shadow:var(--sh);transition:box-shadow .25s,transform .25s}
+.card:hover{box-shadow:var(--sh-h);transform:translateY(-2px)}
+.card p{color:var(--nuit-400);font-size:.92rem;margin-top:8px}
+.btn{border:none;border-radius:999px;padding:.78rem 1.6rem;font:inherit;font-weight:600;font-size:.92rem;cursor:pointer;transition:background .2s}
+.b1{background:var(--indigo);color:var(--sable-50)}
+.b1:hover{background:var(--nuit-800)}
+.b2{background:var(--soleil);color:var(--indigo)}
+.b2:hover{background:var(--or-500)}
+.b3{background:transparent;color:var(--indigo);border:1px solid var(--sable-400)}
+.b3:hover{background:var(--sable-100)}
+label{display:block;font-size:.8rem;font-weight:600;margin-bottom:6px}
+input{width:100%;padding:.72rem .9rem;border:1px solid var(--sable-400);border-radius:10px;background:var(--sable-100);font:inherit;color:var(--indigo)}
+input::placeholder{color:var(--subtle)}
+input:focus{outline:2px solid var(--corail);outline-offset:3px;background:#fff}
+.mer{background:var(--indigo);color:var(--sable-50);padding:56px 0}
+.mer h2{color:var(--sable-50)}
+.mer p{color:var(--nuit-200);margin-top:10px;max-width:48ch}
+.mer .card{background:var(--nuit-800);border-color:#443A8C;box-shadow:none}
+.mer .card h3{color:var(--sable-50)}
+.mer .card p{color:var(--nuit-200)}
+.couchant{background:linear-gradient(180deg,#FBE590 0%,#FFCB46 34%,#F6A564 64%,#FE4368 100%);color:var(--indigo);border-radius:18px;padding:52px 40px;text-align:center}
+.couchant p{color:var(--indigo);opacity:.82;margin:10px auto 0;max-width:44ch}
+.pill{display:inline-block;padding:.32rem .75rem;border-radius:999px;font-size:.75rem;font-weight:600}
+.ok{background:#E1F0EA;color:#266B54}.ko{background:#FCE4E9;color:#C22348}.nf{background:var(--or-100);color:var(--or-700)}
+table{width:100%;border-collapse:collapse;margin-top:20px;font-size:.88rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--sable-300)}
+th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--nuit-400)}
+td b{font-variant-numeric:tabular-nums}
+.logos{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;margin-top:24px}
+.logos figure{text-align:center}
+.logos img{display:block}
+.logos figcaption{font-size:.72rem;color:var(--subtle);margin-top:8px}
+.warn{border-left:3px solid var(--corail);padding-left:14px;color:var(--nuit-400);font-size:.92rem;max-width:62ch}
+</style>
+</head>
+<body>
+
+<section style="padding-bottom:34px">
+ <div class="wrap">
+  <span class="eyebrow">Direction artistique</span>
+  <h1 style="margin-top:18px">Le coucher de soleil,<br>pas la carte postale.</h1>
+  <p class="lede">Palette dérivée du badge : indigo profond, or, corail. L'indigo porte la structure, l'or porte l'action, le corail ne sert qu'à ponctuer.</p>
+ </div>
+</section>
+
+<div class="horizon"></div>
+
+<section class="mer">
+ <div class="wrap">
+  <span class="eyebrow eyebrow--inv">Signature</span>
+  <h2 style="margin-top:14px">La ligne d'horizon</h2>
+  <p>Le logo est coupé en deux : ciel clair au-dessus, mer indigo en dessous, soleil à la jonction. Le site reprend ce découpage pour passer d'une section à l'autre.</p>
+  <div class="grid g3" style="margin-top:28px">
+   <div class="card"><h3>Carte sur fond mer</h3><p>Fond indigo-800, bordure indigo-500. Pas d'ombre : sur du sombre, elle ne se voit pas.</p></div>
+   <div class="card"><h3>Texte secondaire</h3><p>Nuit-200 sur indigo, 8,3:1. Le gris clair standard virerait au sale.</p></div>
+   <div class="card"><h3>Accent</h3><p style="color:var(--soleil)">L'or sur l'indigo tient à 9,1:1 — c'est la seule combinaison où l'or peut faire du texte.</p></div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="wrap">
+  <span class="eyebrow">Couleurs du logo</span>
+  <h2 style="margin-top:14px">Relevées au pixel</h2>
+  <div class="grid g4">
+   <div class="sw"><div class="chip" style="background:#281E73;color:#FDF8EC">31 % du logo</div><div class="info"><div class="nm">Indigo</div><div class="hx">#281E73</div><div class="use">Texte, sections mer, bouton principal</div></div></div>
+   <div class="sw"><div class="chip" style="background:#FFCB46;color:#281E73">29 % du logo</div><div class="info"><div class="nm">Soleil</div><div class="hx">#FFCB46</div><div class="use">Accent, bouton secondaire, horizon</div></div></div>
+   <div class="sw"><div class="chip" style="background:#FE4368;color:#fff">Ponctuation</div><div class="info"><div class="nm">Corail</div><div class="hx">#FE4368</div><div class="use">Focus, filets, jamais de texte fin</div></div></div>
+   <div class="sw"><div class="chip" style="background:#FBE590;color:#96690C">Base neutre</div><div class="info"><div class="nm">Crème</div><div class="hx">#FBE590</div><div class="use">Source des sables et du fond de page</div></div></div>
+   <div class="sw"><div class="chip" style="background:#F6A564;color:#281E73">Dégradé</div><div class="info"><div class="nm">Abricot</div><div class="hx">#F6A564</div><div class="use">Uniquement dans le couchant</div></div></div>
+   <div class="sw"><div class="chip" style="background:#8D6EB6;color:#fff">Dégradé</div><div class="info"><div class="nm">Lilas</div><div class="hx">#8D6EB6</div><div class="use">Réserve — hors UI</div></div></div>
+  </div>
+
+  <h2 style="margin-top:44px">Échelles de travail</h2>
+  <p class="meta" style="margin-top:8px">Nuit 50 → 900 · l'indigo étendu pour la structure</p>
+  <div class="ramp">
+   <div style="background:#F4F3FA;color:#281E73">50</div><div style="background:#E7E5F3;color:#281E73">100</div><div style="background:#C9C5E2;color:#281E73">200</div><div style="background:#A29CC9;color:#281E73">300</div><div style="background:#6B6390;color:#fff">400</div><div style="background:#443A8C;color:#fff">500</div><div style="background:#33277E;color:#fff">600</div><div style="background:#281E73;color:#fff">700</div><div style="background:#1E1758;color:#fff">800</div><div style="background:#14103C;color:#fff">900</div>
+  </div>
+  <p class="meta" style="margin-top:18px">Or 50 → 700 · l'accent étendu</p>
+  <div class="ramp">
+   <div style="background:#FEF9E9;color:#96690C">50</div><div style="background:#FDF0C8;color:#96690C">100</div><div style="background:#FBE590;color:#96690C">200</div><div style="background:#FFD873;color:#281E73">300</div><div style="background:#FFCB46;color:#281E73">400</div><div style="background:#F0B21F;color:#281E73">500</div><div style="background:#C88E12;color:#fff">600</div><div style="background:#96690C;color:#fff">700</div>
+  </div>
+  <p class="meta" style="margin-top:18px">Sable 50 → 400 · le crème désaturé, tenable en pleine page</p>
+  <div class="ramp">
+   <div style="background:#FDF8EC;color:#281E73">50</div><div style="background:#FCF2DE;color:#281E73">100</div><div style="background:#F6EAD0;color:#281E73">200</div><div style="background:#E8DCC0;color:#281E73">300</div><div style="background:#CBBE9F;color:#281E73">400</div>
+  </div>
+ </div>
+</section>
+
+<section class="sep">
+ <div class="wrap">
+  <span class="eyebrow">Composants</span>
+  <h2 style="margin-top:14px">En situation</h2>
+  <div class="grid g3">
+   <div class="card"><span class="eyebrow">Service</span><h3 style="margin-top:12px">Accueil voyageurs</h3><p>Remise des clés, réponses aux questions, présence pendant tout le séjour.</p></div>
+   <div class="card"><span class="eyebrow">Service</span><h3 style="margin-top:12px">Ménage et blanchisserie</h3><p>Remise en état entre deux séjours, linge fourni et lavé sur place.</p></div>
+   <div class="card"><span class="eyebrow">Service</span><h3 style="margin-top:12px">Gestion des annonces</h3><p>Publication, tarification et suivi des réservations sur vos plateformes.</p></div>
+  </div>
+  <div class="grid g3">
+   <div class="card"><h3>Boutons</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+     <button class="btn b1">Demander un devis</button><button class="btn b2">Nos tarifs</button>
+    </div>
+    <div style="margin-top:10px"><button class="btn b3">En savoir plus</button></div>
+   </div>
+   <div class="card"><h3>Champ de formulaire</h3>
+    <div style="margin-top:14px"><label for="m">Adresse email</label><input id="m" type="email" placeholder="prenom@exemple.fr"></div>
+    <p style="font-size:.78rem;margin-top:8px">Focus corail — cliquez dans le champ.</p>
+   </div>
+   <div class="card"><h3>États</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+     <span class="pill ok">Message envoyé</span><span class="pill ko">Champ requis</span><span class="pill nf">Places limitées</span>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="wrap">
+  <div class="couchant">
+   <span class="eyebrow">Bandeau final</span>
+   <h2 style="margin-top:14px">Confiez-nous vos clés</h2>
+   <p>Le dégradé du logo, en un seul endroit de la page. Répété, il tue l'effet.</p>
+   <button class="btn b1" style="margin-top:22px">Nous contacter</button>
+  </div>
+ </div>
+</section>
+
+<section class="sep">
+ <div class="wrap">
+  <span class="eyebrow">Contrastes</span>
+  <h2 style="margin-top:14px">Vérifiés au ratio</h2>
+  <table>
+   <tr><th>Combinaison</th><th>Ratio</th><th>Niveau</th></tr>
+   <tr><td>Indigo sur Sable-50</td><td><b>13,0:1</b></td><td>AAA</td></tr>
+   <tr><td>Sable-50 sur Indigo (bouton principal)</td><td><b>13,0:1</b></td><td>AAA</td></tr>
+   <tr><td>Indigo sur Soleil (bouton secondaire)</td><td><b>9,1:1</b></td><td>AAA</td></tr>
+   <tr><td>Nuit-400 sur Sable-50 (texte secondaire)</td><td><b>5,2:1</b></td><td>AA</td></tr>
+   <tr><td>#7C74A0 sur Sable-50 (méta)</td><td><b>4,1:1</b></td><td>AA gros</td></tr>
+   <tr><td>Corail sur blanc</td><td><b>3,4:1</b></td><td>UI et gros titres</td></tr>
+   <tr><td>Blanc sur Corail (bouton corail)</td><td><b>3,4:1</b></td><td>à proscrire</td></tr>
+   <tr><td>Soleil sur blanc</td><td><b>1,5:1</b></td><td>à proscrire</td></tr>
+  </table>
+  <p class="warn" style="margin-top:22px">Les deux dernières lignes sont les pièges de cette palette. L'or et le corail sont des couleurs de surface, pas de texte : dès qu'ils portent une étiquette, elle devient illisible. Un bouton corail avec texte blanc plafonne à 3,4:1.</p>
+ </div>
+</section>
+
+<div class="horizon"></div>
+
+<section class="mer" style="padding-bottom:60px">
+ <div class="wrap">
+  <span class="eyebrow eyebrow--inv">Fichiers</span>
+  <h2 style="margin-top:14px">Déclinaisons du logo</h2>
+  <div class="logos">
+   <figure><img src="logo-512.png" width="128" height="128" alt="Logo complet"><figcaption>logo-512 · 128 px</figcaption></figure>
+   <figure><img src="logo-512.png" width="64" height="64" alt="Logo complet réduit"><figcaption>64 px — limite basse</figcaption></figure>
+   <figure><img src="mark-512.png" width="64" height="64" alt="Marque simplifiée"><figcaption>marque · 64 px</figcaption></figure>
+   <figure><img src="mark-512.png" width="32" height="32" alt="Marque simplifiée en favicon"><figcaption>marque · 32 px</figcaption></figure>
+  </div>
+  <p style="margin-top:22px;color:var(--nuit-200);max-width:60ch;font-size:.94rem">Le badge complet décroche sous 64 px : le lettrage manuscrit et les hachures de la clef se referment. En dessous, on passe sur la tête de clef seule.</p>
+ </div>
+</section>
+
+</body>
+</html>
