@@ -1974,6 +1974,25 @@
     color: var(--color-on-inverse-muted);
   }
 
+  /* Souligné dès le repos : dans une ligne de mentions déjà grisée, un simple
+     écart de couleur ne suffirait pas à signaler un lien — ni à l'œil, ni aux
+     critères d'accessibilité, qui interdisent la couleur comme seul indice. */
+  .footer-meta-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-inverse);
+    text-underline-offset: 0.2em;
+    transition:
+      color var(--transition-duration-fast) var(--ease-out),
+      text-decoration-color var(--transition-duration-fast) var(--ease-out);
+  }
+
+  .footer-meta-link:hover,
+  .footer-meta-link:focus-visible {
+    color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
+  }
+
   @media (min-width: 48rem) {
     .footer-grid {
       grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);

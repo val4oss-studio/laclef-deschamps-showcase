@@ -79,7 +79,17 @@ export function Footer(): JSX.Element {
               ))}
             </nav>
 
-            <p className="footer-meta">Fait par val4oss</p>
+            <p className="footer-meta">
+              Fait par{' '}
+              <a
+                href={site.author.url}
+                className="footer-meta-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {site.author.name}
+              </a>
+            </p>
           </div>
         </div>
       </footer>

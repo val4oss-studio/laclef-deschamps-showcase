@@ -21,6 +21,8 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.description,
+  authors: [{ name: site.author.name, url: site.author.url }],
+  creator: site.author.name,
   icons: {
     icon: '/favicon.ico',
     apple: '/brand/apple-touch-icon.png',

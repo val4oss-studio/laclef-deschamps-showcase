@@ -18,6 +18,11 @@ export const site = {
     latitude: 46.0725,
     longitude: -1.0889,
   },
+  /** Crédit du studio : affiché en pied de page et déclaré en métadonnées. */
+  author: {
+    name: 'val4oss-studio',
+    url: 'https://studio.val4oss.com',
+  },
   locale: 'fr_FR',
   themeColor: '#281E73',
   backgroundColor: '#FDF8EC',
