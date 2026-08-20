@@ -182,6 +182,43 @@
   --shadow-lg:   0 10px 15px -3px rgba(0,0,0,0.5),
                  0 4px 6px -4px rgba(0,0,0,0.3);
   --shadow-gold: 0 0 0 4px var(--color-gold-tint-20);
+
+  /* Le dégradé du logo, du crème au corail. Une seule occurrence par page. */
+  --gradient-couchant: linear-gradient(
+    180deg,
+    var(--color-creme)   0%,
+    var(--color-soleil)  34%,
+    var(--color-abricot) 64%,
+    var(--color-corail)  100%
+  );
+
+  /* Ombre directionnelle : lumière en haut à gauche, ombre projetée en bas à
+     droite uniquement. Le flou reste inférieur ou égal au décalage (et le spread
+     négatif rogne encore) pour qu'aucune trace ne remonte en haut ni à gauche. */
+  --shadow-float:
+    10px 10px 20px -8px color-mix(in srgb, var(--color-nuit-900) 22%, transparent),
+    4px 4px 8px -4px color-mix(in srgb, var(--color-nuit-900) 14%, transparent);
+  --shadow-float-hover:
+    16px 16px 28px -10px color-mix(in srgb, var(--color-nuit-900) 26%, transparent),
+    6px 6px 12px -5px color-mix(in srgb, var(--color-nuit-900) 16%, transparent);
+}
+
+/* ===================
+ * ANIMATED PROPERTIES
+ * ------------------- */
+
+/* Typées pour être interpolables : une custom property non enregistrée se
+   comporte comme une chaîne et saute d'une valeur à l'autre sans transition. */
+@property --scroll-row-fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-row-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
 /* ==========
@@ -403,6 +440,13 @@
 
   .btn--accent:hover { background-color: var(--color-accent-hover); }
 
+  .btn--primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-inverse);
+  }
+
+  .btn--primary:hover { background-color: var(--color-primary-hover); }
+
   /* ============================================================
    * Ossature commune à toutes les sections.
    * Les variantes ne portent QUE les divergences de couleur/décor.
@@ -412,6 +456,11 @@
     background-color: var(--color-page);
     color: var(--color-ink);
     padding-block: 5rem 6rem;
+  }
+
+  /* Filet sable : sépare deux sections claires sans marquer de rupture. */
+  .section--filet {
+    border-top: 1px solid var(--color-line);
   }
 
   /* Première section d'une page : dégage la hauteur de la navbar fixe. */
@@ -613,10 +662,354 @@
 
   .section--sea .card-text { color: var(--color-on-inverse-muted); }
 
-  /* Le bandeau couchant. Une seule occurrence par page. */
+  /* ============================================================
+   * Bandeau défilant générique : une ligne, débordement horizontal.
+   * Les dimensions passent par des variables pour que ScrollRow.tsx
+   * puisse lire le pas (largeur de carte + gouttière) au clic.
+   * ============================================================ */
+  .scroll-row {
+    --scroll-row-gap: 1.5rem;
+    /* Loge l'ombre portée au survol, qui déborde de la boîte des cartes.
+       Appliqué aussi en haut : symétrique, les chevrons tombent pile au centre. */
+    --scroll-row-bleed: 2.25rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .scroll-row-track {
+    --scroll-row-fade: 3.5rem;
+    --scroll-row-fade-start: var(--scroll-row-fade);
+    --scroll-row-fade-end: var(--scroll-row-fade);
+    /* Le masque se cale sur la boîte de l'élément, pas sur le contenu défilé :
+       il reste donc collé aux deux bords pendant que les cartes glissent dessous. */
+    --scroll-row-mask: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--scroll-row-fade-start),
+      black calc(100% - var(--scroll-row-fade-end)),
+      transparent 100%
+    );
+    display: flex;
+    gap: var(--scroll-row-gap);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    padding-block: var(--scroll-row-bleed);
+    padding-inline-end: var(--scroll-row-bleed);
+    scrollbar-width: none;
+    -webkit-mask-image: var(--scroll-row-mask);
+    mask-image: var(--scroll-row-mask);
+    transition:
+      --scroll-row-fade-start var(--transition-duration-base) var(--ease-out),
+      --scroll-row-fade-end var(--transition-duration-base) var(--ease-out);
+  }
+
+  /* En butée, plus rien à annoncer de ce côté : le fondu se retire. */
+  .scroll-row-track[data-at-start="true"] { --scroll-row-fade-start: 0px; }
+  .scroll-row-track[data-at-end="true"]   { --scroll-row-fade-end: 0px; }
+
+  .scroll-row-track::-webkit-scrollbar { display: none; }
+
+  .scroll-row-track > * {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .scroll-row-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    cursor: pointer;
+    opacity: 0.3;
+    transition:
+      opacity var(--transition-duration-fast) var(--ease-out),
+      background-color var(--transition-duration-fast) var(--ease-out);
+  }
+
+  .scroll-row-arrow-icon { width: 1.125rem; height: 1.125rem; }
+
+  .scroll-row:hover .scroll-row-arrow,
+  .scroll-row-arrow:focus-visible { opacity: 1; }
+
+  .scroll-row-arrow:hover { background-color: var(--color-accent-soft); }
+
+  /* Placée après les états actifs : une butée doit rester muette au survol. */
+  .scroll-row-arrow:disabled {
+    opacity: 0.12;
+    cursor: default;
+    background-color: var(--color-surface);
+  }
+
+  /* Sans survol (tactile), le défilement au doigt suffit : les flèches gênent.
+     La grille repasse à une colonne, sinon la piste hériterait d'une piste `auto`. */
+  @media (hover: none) {
+    .scroll-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .scroll-row-arrow { display: none; }
+  }
+
+  /* ============================================================
+   * Avis clients : cartes flottantes défilant sur le sol sable.
+   * ============================================================ */
+
+  /* Entre dans le champ après le titre, via la mécanique de reveal existante. */
+  .avis-banner {
+    --ao-delay: 800ms;
+    margin-top: 1rem;
+  }
+
+  /* Carte d'avis : coins arrondis, posée en flottaison sur le sol sable. */
+  .avis-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: min(26rem, 78vw);
+    padding: 1.5rem;
+    border-radius: var(--radius-card);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-float);
+    transition:
+      box-shadow var(--transition-duration-base) var(--ease-out),
+      transform var(--transition-duration-base) var(--ease-out);
+  }
+
+  /* `transform` et non `translate` : laisse le canal `translate` au reveal. */
+  .avis-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-float-hover);
+  }
+
+  .avis-card-body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 1.25rem;
+    width: 100%;
+  }
+
+  .avis-card-author {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 5rem;
+  }
+
+  .avis-card-avatar {
+    width: 4rem;
+    height: 4rem;
+    border-radius: var(--radius-pill);
+    object-fit: cover;
+    background-color: var(--color-surface-sunk);
+  }
+
+  .avis-card-pseudo {
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    color: var(--color-ink);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .avis-card-quote {
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+    color: var(--color-muted);
+  }
+
+  /* Guillemets français : décor typographique, jamais du contenu. */
+  .avis-card-quote::before,
+  .avis-card-quote::after {
+    color: var(--color-accent);
+    font-weight: var(--fw-bold);
+  }
+
+  .avis-card-quote::before { content: "\00ab\00a0"; }
+  .avis-card-quote::after  { content: "\00a0\00bb"; }
+
+  /* ------------------------------------------------------------
+   * Note en étoiles : deux rangées superposées, celle du dessus
+   * rognée à `--rating-fill` — c'est ce qui donne la demi-étoile.
+   * ------------------------------------------------------------ */
+  .rating {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .rating-row {
+    display: flex;
+    gap: 0.1875rem;
+  }
+
+  .rating-clip {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--rating-fill, 0%);
+    overflow: hidden;
+  }
+
+  /* Sans largeur intrinsèque, les étoiles se compresseraient au lieu d'être rognées. */
+  .rating-clip .rating-row { width: max-content; }
+
+  .rating-star {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: var(--color-line-strong);
+  }
+
+  .rating-clip .rating-star { fill: var(--color-accent); }
+
+  /* Le bandeau couchant. Une seule occurrence par page : répété, il perd son effet. */
   .couchant {
+    padding: 3.25rem 2.5rem;
+    border-radius: var(--radius-card);
     background-image: var(--gradient-couchant);
     color: var(--color-nuit-700);
+    text-align: center;
+    /* État initial pour l'animation reveal */
+    opacity: 0;
+    translate: 0 1.5rem;
+    will-change: opacity, translate;
+    transition:
+      opacity   700ms var(--ease-out-smooth) 400ms,
+      translate 700ms var(--ease-out-smooth) 400ms;
+  }
+  section.is-visible .couchant {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .couchant .section-title { margin-top: 0.875rem; }
+
+  /* Indigo aminci par color-mix et non par `opacity` : le canal d'opacité
+     appartient au reveal, y toucher ici casserait l'apparition. */
+  .couchant .section-lead {
+    max-width: 44ch;
+    margin-top: 0.625rem;
+    margin-inline: auto;
+    color: color-mix(in srgb, var(--color-nuit-700) 82%, transparent);
+  }
+
+  .couchant .section-actions { justify-content: center; }
+
+  /* ============================================================
+   * Pied de page — même livrée « mer » que la section services,
+   * introduit par le filet d'horizon, sans le halo du hero.
+   *
+   * Aucune classe du groupe de reveal ici (`.section-lead`,
+   * `.section-title`, `.ao-animate`…) : hors d'une <section> qui
+   * reçoit `is-visible`, elles resteraient bloquées à opacity 0.
+   * ============================================================ */
+  .footer {
+    padding-block: 4rem 2rem;
+    background-color: var(--color-inverse);
+    color: var(--color-on-inverse);
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .footer-brand-link {
+    display: inline-flex;
+    border-radius: var(--radius-pill);
+  }
+
+  /* Le badge décroche sous 64 px : on reste au-dessus. */
+  .footer-logo {
+    width: 4.5rem;
+    height: auto;
+  }
+
+  .footer-description {
+    max-width: 44ch;
+    font-size: var(--fs-body);
+    line-height: var(--lh-loose);
+    color: var(--color-on-inverse-muted);
+  }
+
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .footer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    list-style: none;
+  }
+
+  .footer-link {
+    font-size: var(--fs-body);
+    color: var(--color-on-inverse);
+    text-decoration: none;
+    transition: color var(--transition-duration-fast) var(--ease-out);
+  }
+
+  .footer-link:hover { color: var(--color-accent); }
+
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line-inverse);
+  }
+
+  .footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+
+  .footer-legal-link {
+    font-size: var(--fs-caption);
+    color: var(--color-on-inverse-muted);
+    text-decoration: none;
+    transition: color var(--transition-duration-fast) var(--ease-out);
+  }
+
+  .footer-legal-link:hover { color: var(--color-accent); }
+
+  .footer-meta {
+    font-size: var(--fs-caption);
+    color: var(--color-on-inverse-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .footer-grid {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: 3rem;
+    }
   }
 }
 

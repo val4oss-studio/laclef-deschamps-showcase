@@ -1,5 +1,10 @@
 import type { JSX } from 'react';
-import { HeroSection, ServicesSection, AboutSection } from '@/app/component/section';
+import {
+  HeroSection,
+  ServicesSection,
+  AvisSection,
+  CouchantSection,
+} from '@/app/component/section';
 
 export default function HomePage(): JSX.Element {
   return (
@@ -8,6 +13,8 @@ export default function HomePage(): JSX.Element {
       {/* Filet or + demi-soleil : passage de la section claire à la section « mer ». */}
       <div className="horizon" aria-hidden="true" />
       <ServicesSection id="services" />
+      <AvisSection id="avis" />
+      <CouchantSection id="contact" />
     </>
   );
 }
