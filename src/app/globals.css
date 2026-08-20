@@ -142,8 +142,8 @@
   /* Layout */
   --shell-max:        80rem;  /* largeur utile maximale du contenu */
   --shell-pad:        clamp(1rem, 4vw, 2.5rem);
-  --navbar-height:    4.5rem;
-  --navbar-logo-size: 3rem;
+  --navbar-height:    5.5rem;
+  --navbar-logo-size: 4rem;
 
   /* Line heights */
   --lh-tight:         1.1;
@@ -222,6 +222,14 @@
   syntax: "<length>";
   inherits: false;
   initial-value: 0px;
+}
+
+/* Sur téléphone, un badge de 4rem mangerait un tiers de la hauteur utile. */
+@media (max-width: 47.999rem) {
+  :root {
+    --navbar-height:    4.75rem;
+    --navbar-logo-size: 3.25rem;
+  }
 }
 
 /* ==========
@@ -368,6 +376,12 @@
   }
 
   .navbar-inner {
+    /* `.navbar` étant positionnée avec un z-index, elle ouvre son propre
+       contexte d'empilement : à l'intérieur, un enfant statique passe SOUS
+       tout descendant positionné. Sans ces deux lignes, le panneau recouvre
+       le logo et le bouton, et la croix devient inatteignable. */
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -428,6 +442,155 @@
   /* Sous 480 px le logo seul suffit : le nom ferait passer les liens à la ligne. */
   @media (max-width: 30rem) {
     .navbar-brand-name { display: none; }
+  }
+
+  /* ------------------------------------------------------------
+   * Menu téléphone : trois barres qui se plient en croix, panneau
+   * plein écran translucide. Motif repris du projet theboweryst.
+   * ------------------------------------------------------------ */
+  .navbar-burger {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    /* 2.75rem = 44 px, la cible tactile minimale recommandée. */
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .navbar-burger-line {
+    width: 1.75rem;
+    height: 0.175rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-ink);
+    transition:
+      transform var(--transition-duration-base) var(--ease-out),
+      opacity var(--transition-duration-fast) var(--ease-out);
+  }
+
+  /* L'état vient de `aria-expanded`, déjà présent pour l'accessibilité :
+     inutile de doubler avec une classe qui pourrait se désynchroniser.
+
+     L'ordre `translate` puis `rotate` compte. L'inverse ferait glisser la
+     barre le long de son axe déjà pivoté, donc en diagonale, et la croix
+     serait décentrée. */
+  .navbar-burger[aria-expanded="true"] .navbar-burger-line:nth-child(1) {
+    transform: translateY(0.625rem) rotate(45deg);
+  }
+
+  .navbar-burger[aria-expanded="true"] .navbar-burger-line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-1rem);
+  }
+
+  .navbar-burger[aria-expanded="true"] .navbar-burger-line:nth-child(3) {
+    transform: translateY(-0.625rem) rotate(-45deg);
+  }
+
+  .navbar-panel {
+    position: fixed;
+    inset: 0;
+    /* Comparé aux frères DANS `.navbar`, pas au reste de la page : le sous-arbre
+       entier est déjà remonté par le z-index de `.navbar`. */
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: color-mix(in srgb, var(--color-page) 92%, transparent);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    opacity: 0;
+    visibility: hidden;
+    /* `visibility` ne s'interpole pas : on la retarde de toute la durée du
+       fondu, sinon le panneau disparaîtrait d'un coup dès la fermeture. */
+    transition:
+      opacity var(--transition-duration-base) var(--ease-out),
+      visibility 0s linear var(--transition-duration-base);
+  }
+
+  .navbar-panel[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--transition-duration-base) var(--ease-out),
+      visibility 0s;
+  }
+
+  /* Menu ouvert : la barre s'efface pour que le flou couvre tout l'écran
+     sans laisser de couture au niveau de la navbar. */
+  .navbar[data-menu-open="true"] { background-color: transparent; }
+
+  .navbar-panel-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+    padding: 2rem;
+    transform: translateY(-1.5rem);
+    opacity: 0;
+    transition:
+      transform var(--transition-duration-slow) var(--ease-out-smooth) 80ms,
+      opacity var(--transition-duration-slow) var(--ease-out-smooth) 80ms;
+  }
+
+  .navbar-panel[data-open="true"] .navbar-panel-nav {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .navbar-panel-link {
+    position: relative;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color var(--transition-duration-fast) var(--ease-out);
+  }
+
+  /* L'or est une couleur de surface, jamais de texte fin : il souligne. */
+  .navbar-panel-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 80%;
+    height: 2px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-accent);
+    transform: translateX(-50%) scaleX(0);
+    transition: transform var(--transition-duration-base) var(--ease-out);
+  }
+
+  .navbar-panel-link:hover,
+  .navbar-panel-link:focus-visible { color: var(--color-primary); }
+
+  .navbar-panel-link:hover::after,
+  .navbar-panel-link:focus-visible::after { transform: translateX(-50%) scaleX(1); }
+
+  /* Bascule : les onglets cèdent la place au bouton. */
+  @media (max-width: 47.999rem) {
+    .navbar-inner {
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .navbar-nav { display: none; }
+    .navbar-burger { display: flex; }
+  }
+
+  /* Au-delà, le panneau n'a plus lieu d'être — y compris pour les lecteurs
+     d'écran, qui verraient sinon deux fois la même navigation. */
+  @media (min-width: 48rem) {
+    .navbar-panel { display: none; }
   }
 
   /* Bouton d'appel à l'action. */

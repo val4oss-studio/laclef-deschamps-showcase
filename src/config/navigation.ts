@@ -7,6 +7,13 @@ export interface NavLink {
   href: string;
 }
 
+/**
+ * Retour à l'accueil, tenu à l'écart de `navLinks` : sur grand écran le logo
+ * joue déjà ce rôle, et le plan du site liste la racine séparément — l'ajouter
+ * à `navLinks` y créerait une URL en double.
+ */
+export const homeLink: NavLink = { label: 'Accueil', href: '/' };
+
 export const navLinks: readonly NavLink[] = [
   { label: 'Services', href: '/services' },
   { label: 'Équipe', href: '/equipe' },
