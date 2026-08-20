@@ -17,7 +17,7 @@ export interface Avis {
 }
 
 /** Avatar neutre servi tant que les vraies photos ne sont pas disponibles. */
-const AVATAR_PLACEHOLDER = '/avis/avatar-placeholder.svg';
+const AVATAR_PLACEHOLDER = '/avatar-placeholder.svg';
 
 export const avis: readonly Avis[] = [
   {

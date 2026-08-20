@@ -16,13 +16,14 @@ export function AboutSection({ id }: AboutSectionProps): JSX.Element {
           <h2 className="section-title">Une conciergerie locale et familiale</h2>
         </div>
         <div className="section-grid">
-          {about.map((item) => (
+          {about.map((item, index) => (
             <Card
               key={item.title}
               title={item.title}
               description={item.description}
               image={item.image}
               imageAlt={item.imageAlt}
+              index={index}
             />
           ))}
         </div>

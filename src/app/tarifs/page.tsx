@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import type { Metadata } from 'next';
+import { PrestationsSection, TarifsSection } from '@/app/component/section';
 import { site } from '@/config/site';
 
 export const metadata: Metadata = {
@@ -13,5 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default function TarifsPage(): JSX.Element {
-  return <section id="tarifs" className="section section--first" />;
+  return (
+    <>
+      <TarifsSection id="tarifs" />
+      <PrestationsSection id="prestations" />
+    </>
+  );
 }

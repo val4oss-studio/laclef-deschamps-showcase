@@ -1,3 +1,12 @@
 export { AvisCard } from './AvisCard';
 export { Card } from './Card';
+export { ContactCard } from './ContactCard';
+export { Gallery } from './Gallery';
+export { LocationMap } from './LocationMap';
+export { LogementCard } from './LogementCard';
+export { PersonCard } from './PersonCard';
+export { PriceList } from './PriceList';
 export { RatingStars } from './RatingStars';
+export { Tag } from './Tag';
+export { TarifCard } from './TarifCard';
+export { ZoneMap } from './ZoneMap';

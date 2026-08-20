@@ -123,10 +123,13 @@
   }
   --animate-reveal-ltr: revealLTR 1000ms var(--ease-in-out) 0s both;
   
+  /* L'amplitude passe par une variable, résolue sur l'élément animé : deux
+     cartes peuvent ainsi flotter plus ou moins haut. Le repli reproduit
+     exactement le réglage d'origine (-14px / -5px). */
   @keyframes floating {
-    0%, 100% { translate: 0 0;     }
-    40%      { translate: 0 -14px; }
-    70%      { translate: 0 -5px;  }
+    0%, 100% { translate: 0 0; }
+    40%      { translate: 0 calc(var(--floating-amplitude, 14px) * -1);    }
+    70%      { translate: 0 calc(var(--floating-amplitude, 14px) * -0.36); }
   }
   --animate-floating: floating 7000ms var(--ease-in-out) var(--floating-delay, 0ms) infinite;
 }
@@ -238,6 +241,21 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Pied de page collant : la page occupe au minimum la hauteur du viewport
+     et `.page-main` absorbe tout l'espace restant. `dvh` d'abord annulé par
+     `vh` sur les navigateurs qui ne le connaissent pas. */
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* `1 0 auto` : grandit pour remplir, mais jamais compressé sous son contenu. */
+  .page-main {
+    flex: 1 0 auto;
   }
 
   html {
@@ -565,11 +583,23 @@
     margin-top: 0.75rem;
   }
 
+  /* Flex et non grid : une grille laisserait une dernière ligne incomplète
+     collée à gauche. `justify-content` la recentre, et le plafond de largeur
+     garde toutes les cartes au même gabarit d'une ligne à l'autre. */
   .section-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1.5rem;
     margin-top: 3rem;
+  }
+
+  .section-grid > * { flex: 1 1 15rem; }
+
+  /* Sous 40rem la carte prend toute la largeur : la plafonner y créerait des
+     marges inutiles. Le plafond ne sert qu'à égaliser les lignes. */
+  @media (min-width: 40rem) {
+    .section-grid > * { max-width: 17.5rem; }
   }
 
   .section-visual {
@@ -592,11 +622,6 @@
     }
   }
 
-  .card:nth-child(1) { --stagger-index: 0; }
-  .card:nth-child(2) { --stagger-index: 1; }
-  .card:nth-child(3) { --stagger-index: 2; }
-  .card:nth-child(4) { --stagger-index: 3; }
-
   /* Carte visuelle générique : image en haut, texte en dessous. */
   .card {
     display: flex;
@@ -611,6 +636,8 @@
     translate: 0 1.5rem;
     will-change: opacity, translate;
     
+    /* `--stagger-index` est posé en ligne par le composant : il suit donc le
+       nombre réel de cartes, là où des règles `nth-child` s'arrêtaient à 4. */
     --card-reveal-delay: calc(1000ms + var(--stagger-index, 0) * 150ms);
 
     transition:
@@ -640,6 +667,10 @@
     flex-direction: column;
     gap: 0.5rem;
     padding: 1.25rem 1.25rem 1.5rem;
+    /* Absorbe la hauteur restante : permet à `.card-action` de se caler en bas
+       quelle que soit la longueur du texte. Sans effet sur les cartes sans
+       action — cet espace était déjà du fond de carte. */
+    flex: 1;
   }
 
   .card-title {
@@ -652,6 +683,180 @@
     font-size: var(--fs-body);
     line-height: var(--lh-normal);
     color: var(--color-muted);
+  }
+
+  /* Carte cliquable dans son ensemble : le lien du titre est étendu par un
+     calque en surimpression. Un seul élément focusable, au lieu d'en semer un
+     par zone cliquable. */
+  .card--link { position: relative; }
+
+  .card-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  /* L'anneau de focus entoure la carte, pas les quelques mots du titre. */
+  .card--link:focus-within {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 3px;
+  }
+
+  .card-link:focus-visible { outline: none; }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+  }
+
+  .card-action {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    color: var(--color-or-700);
+  }
+
+  .card-action--pending {
+    /* --color-subtle est donné pour « 16 px minimum » dans la charte : à la
+       taille caption il passerait sous le seuil AA. --color-muted tient. */
+    color: var(--color-muted);
+    font-weight: var(--fw-medium);
+  }
+
+  /* Étiquette courte et réutilisable : commune, typologie, capacité. */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface-sunk);
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    white-space: nowrap;
+  }
+
+  .tag--accent {
+    background-color: var(--color-accent-soft);
+    color: var(--color-or-700);
+  }
+
+  /* ============================================================
+   * Secteur d'intervention : carte stylisée + communes couvertes.
+   * Dessin maison, sans bibliothèque ni tuiles distantes — donc
+   * aucune requête tierce et aucun cookie à déclarer.
+   * ============================================================ */
+  .zone-map-frame {
+    --ao-delay: 700ms;
+    display: flex;
+    justify-content: center;
+  }
+
+  .zone-map {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-float);
+  }
+
+  .zone-map-sea   { fill: var(--color-inverse); }
+  .zone-map-land  { fill: var(--color-sable-200); }
+  .zone-map-isle  { fill: var(--color-nuit-600); }
+
+  /* Le même or que le filet d'horizon : la côte et la ligne d'horizon
+     racontent la même chose. */
+  .zone-map-coast {
+    fill: none;
+    stroke: var(--color-or-400);
+    stroke-width: 2;
+  }
+
+  /* Marqueurs échelonnés sur la mécanique de reveal des cartes. */
+  .zone-marker {
+    opacity: 0;
+    transition:
+      opacity
+        500ms
+        var(--ease-out-smooth)
+        calc(1000ms + var(--stagger-index, 0) * 180ms);
+  }
+
+  section.is-visible .zone-marker { opacity: 1; }
+
+  .zone-marker-halo {
+    fill: var(--color-accent);
+    opacity: 0.24;
+  }
+
+  .zone-marker-dot {
+    fill: var(--color-accent);
+    stroke: var(--color-nuit-700);
+    stroke-width: 2;
+  }
+
+  .zone-marker-label {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: var(--fw-semibold);
+    fill: var(--color-nuit-700);
+  }
+
+  /* Repère de situation : présent pour situer, jamais pour se faire remarquer. */
+  .zone-marker--muted .zone-marker-dot {
+    fill: var(--color-sable-400);
+    stroke: none;
+  }
+
+  .zone-marker--muted .zone-marker-label {
+    font-size: 13px;
+    font-weight: var(--fw-medium);
+    fill: var(--color-muted);
+  }
+
+  .zone-list {
+    --ao-delay: 900ms;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+    list-style: none;
+  }
+
+  .zone-item-name {
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    color: var(--color-ink);
+  }
+
+  .zone-item-text {
+    margin-top: 0.25rem;
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+    color: var(--color-muted);
+  }
+
+  .zone-logements-title { margin-top: 4rem; }
+
+  /* Cartes plus étroites que celles des avis : elles portent moins de texte. */
+  .zone-logements {
+    --scroll-row-item: 22rem;
+    --ao-delay: 300ms;
+  }
+
+  /* La carte du secteur passe sous le texte avant d'être illisible. */
+  @media (max-width: 63.999rem) {
+    .zone-map { max-width: 32rem; }
   }
 
   /* La carte passe en livrée sombre dès qu'elle est posée sur la mer. */
@@ -675,6 +880,9 @@
    * ============================================================ */
   .scroll-row {
     --scroll-row-gap: 1.5rem;
+    /* Largeur d'une carte du bandeau. Déclarée ici et non sur la carte :
+       avis et logements partagent la règle au lieu de la dupliquer. */
+    --scroll-row-item: 26rem;
     /* Loge l'ombre portée au survol, qui déborde de la boîte des cartes.
        Appliqué aussi en haut : symétrique, les chevrons tombent pile au centre. */
     --scroll-row-bleed: 2.25rem;
@@ -720,6 +928,7 @@
 
   .scroll-row-track > * {
     flex: 0 0 auto;
+    width: min(var(--scroll-row-item), 78vw);
     scroll-snap-align: start;
   }
 
@@ -754,6 +963,21 @@
     background-color: var(--color-surface);
   }
 
+  /* Tout tient sur une ligne : les chevrons n'auraient rien à faire défiler. */
+  .scroll-row[data-scrollable="false"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .scroll-row[data-scrollable="false"] .scroll-row-arrow { display: none; }
+
+  /* Sans débordement, centrer ne rend aucun contenu inatteignable. Le
+     rembourrage de fin, lui, décalerait le centre optique. */
+  .scroll-row[data-scrollable="false"] .scroll-row-track {
+    justify-content: center;
+    padding-inline-end: 0;
+  }
+
   /* Sans survol (tactile), le défilement au doigt suffit : les flèches gênent.
      La grille repasse à une colonne, sinon la piste hériterait d'une piste `auto`. */
   @media (hover: none) {
@@ -781,7 +1005,6 @@
     flex-direction: column;
     align-items: center;
     gap: 1.25rem;
-    width: min(26rem, 78vw);
     padding: 1.5rem;
     border-radius: var(--radius-card);
     background-color: var(--color-surface);
@@ -879,6 +1102,470 @@
   }
 
   .rating-clip .rating-star { fill: var(--color-accent); }
+
+  /* ============================================================
+   * Équipe : cartes en flottaison, inclinées au passage de la souris.
+   *
+   * Un effet par propriété, pour qu'aucun n'écrase l'autre :
+   *   opacity + scale → apparition au défilement (ici)
+   *   translate       → flottement continu (--animate-floating, existant)
+   *   transform       → inclinaison 3D (posée en ligne par PersonCard)
+   * ============================================================ */
+  /* Flex et non grid : une grille laisserait une dernière ligne incomplète
+     collée à gauche. En flex, `justify-content` la recentre, et le plafond de
+     largeur garde toutes les cartes au même gabarit d'une ligne à l'autre. */
+  .team-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3.5rem;
+    /* Sans profondeur sur le parent, les rotations resteraient plates. */
+    perspective: 900px;
+  }
+
+  .person-card {
+    flex: 1 1 15rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2rem 1.5rem;
+    border-radius: var(--radius-card);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-float);
+    text-align: center;
+
+    /* Apparition : ni `translate` ni `transform`, ces deux canaux sont pris. */
+    opacity: 0;
+    scale: 0.96;
+
+    animation: var(--animate-floating);
+    /* Indispensable : `--animate-floating` est déclaré sur :root, donc son
+       `var(--floating-delay, 0ms)` y a DÉJÀ été substitué par son repli. La
+       valeur héritée est figée à 0ms, et une custom property posée plus bas
+       n'y change plus rien. Les longhands, eux, sont résolus ici. */
+    animation-delay: var(--floating-delay, 0ms);
+    animation-duration: var(--floating-duration, 7000ms);
+    transition:
+      opacity 600ms var(--ease-out-smooth)
+        calc(500ms + var(--stagger-index, 0) * 140ms),
+      scale 600ms var(--ease-out-smooth)
+        calc(500ms + var(--stagger-index, 0) * 140ms),
+      transform var(--transition-duration-base) var(--ease-out),
+      box-shadow var(--transition-duration-base) var(--ease-out);
+  }
+
+  section.is-visible .person-card {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .person-card:hover { box-shadow: var(--shadow-float-hover); }
+
+  .person-card-portrait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* `min()` plutôt qu'une taille fixe : le portrait remplit la carte sur les
+     gabarits étroits au lieu de laisser deux marges inutiles. */
+  .person-card-avatar {
+    width: min(11rem, 100%);
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: var(--radius-pill);
+    object-fit: cover;
+    background-color: var(--color-surface-sunk);
+  }
+
+  .person-card-name {
+    /* Remonte sur le bas du portrait. `position: relative` le fait peindre
+       au-dessus de l'image, qui n'est pas positionnée. */
+    position: relative;
+    margin-top: -1.5rem;
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-snug);
+    color: var(--color-ink);
+    text-wrap: balance;
+
+    /* Contour blanc épousant chaque lettre. `paint-order` est indispensable :
+       par défaut le trait se dessine PAR-DESSUS le remplissage et ronge la
+       moitié de son épaisseur vers l'intérieur du glyphe, ce qui amincit le
+       texte. En peignant le trait d'abord, la lettre reste intacte. */
+    paint-order: stroke fill;
+    -webkit-text-stroke: 5px var(--color-surface);
+  }
+
+  /* Repli sans `paint-order` : huit ombres portées sans flou approximent le
+     même contour. Une ombre ne peut pas entamer la lettre, le risque de texte
+     rongé n'existe donc pas ici. */
+  @supports not (paint-order: stroke) {
+    .person-card-name {
+      -webkit-text-stroke: 0;
+      text-shadow:
+        0 2px 0 var(--color-surface),
+        2px 0 0 var(--color-surface),
+        0 -2px 0 var(--color-surface),
+        -2px 0 0 var(--color-surface),
+        1.5px 1.5px 0 var(--color-surface),
+        -1.5px 1.5px 0 var(--color-surface),
+        1.5px -1.5px 0 var(--color-surface),
+        -1.5px -1.5px 0 var(--color-surface);
+    }
+  }
+
+  .person-card-role {
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-or-700);
+  }
+
+  .person-card-sentence {
+    margin-top: 0.5rem;
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+    color: var(--color-muted);
+  }
+
+  /* Sous 40rem la carte occupe toute la largeur : la plafonner y créerait
+     des marges inutiles. Le plafond ne sert qu'à égaliser les lignes. */
+  @media (min-width: 40rem) {
+    .person-card { max-width: 17rem; }
+  }
+
+  /* Le flottement est purement décoratif : il n'a pas sa place ici. */
+  @media (prefers-reduced-motion: reduce) {
+    .person-card { animation: none; }
+  }
+
+  /* ============================================================
+   * Galerie de l'agence.
+   * ============================================================ */
+  .gallery-frame { --ao-delay: 500ms; }
+
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 3rem;
+    list-style: none;
+  }
+
+  .gallery-item {
+    flex: 1 1 15rem;
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background-color: var(--color-surface-sunk);
+    box-shadow: var(--shadow-float);
+  }
+
+  @media (min-width: 40rem) {
+    .gallery-item { max-width: 18rem; }
+  }
+
+  /* Réutilise `.card-image` pour le cadrage ; seul le zoom est propre ici. */
+  .gallery-item .card-image {
+    transition: scale var(--transition-duration-slow) var(--ease-out);
+  }
+
+  .gallery-item:hover .card-image { scale: 1.05; }
+
+  /* ============================================================
+   * Tarifs — l'indigo porte la structure, l'or porte le prix.
+   * ============================================================ */
+
+  /* Le forfait phare prend la livrée « mer » sur un fond clair : c'est le
+     seul endroit de la page où l'or peut faire du texte (9,1:1 sur indigo). */
+  .tarif-hero {
+    --ao-delay: 600ms;
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+    padding: 2.5rem;
+    border-radius: var(--radius-card);
+    background-color: var(--color-inverse);
+    color: var(--color-on-inverse);
+    box-shadow: var(--shadow-float);
+  }
+
+  .tarif-hero-title {
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    color: var(--color-on-inverse);
+  }
+
+  .tarif-includes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-top: 1.5rem;
+    list-style: none;
+  }
+
+  .tarif-includes li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+    color: var(--color-on-inverse-muted);
+  }
+
+  /* Pastille or : couleur de surface, jamais de texte fin. */
+  .tarif-includes li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-accent);
+  }
+
+  .tarif-hero-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 1.75rem 2rem;
+    border: 1px solid var(--color-line-inverse);
+    border-radius: var(--radius-card);
+    background-color: var(--color-inverse-deep);
+    text-align: center;
+  }
+
+  .tarif-hero-amount {
+    font-family: var(--font-display);
+    font-size: var(--fs-h1);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--ls-tighter);
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .tarif-hero-unit {
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-on-inverse-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .tarif-hero {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 3rem;
+      padding: 3rem;
+    }
+  }
+
+  /* Même recette que .section-grid, avec une base plus large : les intitulés
+     de packs ne tiennent pas dans une colonne de carte illustrée. */
+  .tarif-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .tarif-grid > * { flex: 1 1 22rem; }
+
+  @media (min-width: 40rem) {
+    .tarif-grid > * { max-width: 28rem; }
+  }
+
+  .tarif-note {
+    font-size: var(--fs-caption);
+    line-height: var(--lh-normal);
+    color: var(--color-muted);
+  }
+
+  .tarif-footnote {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-line);
+    font-size: var(--fs-caption);
+    line-height: var(--lh-normal);
+    color: var(--color-muted);
+  }
+
+  .tarif-actions { justify-content: center; }
+
+  /* ------------------------------------------------------------
+   * Liste de prix à points de conduite.
+   * ------------------------------------------------------------ */
+  .price-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  /* Les points relient l'intitulé au prix. `align-self: baseline` sur une
+     boîte sans texte aligne son bord INFÉRIEUR sur la ligne de base : le
+     pointillé tombe donc pile dessus au lieu de flotter à mi-hauteur.
+     `order` le glisse entre le <dt> et le <dd>, qu'il suit dans le DOM. */
+  .price-row::after {
+    content: "";
+    order: 1;
+    flex: 1 1 1.5rem;
+    align-self: baseline;
+    height: 0.45em;
+    border-bottom: 1px dotted var(--color-line-strong);
+  }
+
+  .price-label {
+    font-size: var(--fs-body);
+    line-height: var(--lh-snug);
+    color: var(--color-ink);
+  }
+
+  .price-value {
+    order: 2;
+    font-family: var(--font-display);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+    /* Le montant et son symbole ne doivent jamais être séparés. */
+    white-space: nowrap;
+  }
+
+  /* ============================================================
+   * Contact — deux entrées, une carte de situation.
+   * ============================================================ */
+  .contact-grid {
+    --ao-delay: 600ms;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .contact-card {
+    flex: 1 1 18rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+    padding: 1.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-float);
+    text-decoration: none;
+    transition:
+      box-shadow var(--transition-duration-base) var(--ease-out),
+      border-color var(--transition-duration-base) var(--ease-out),
+      transform var(--transition-duration-base) var(--ease-out);
+  }
+
+  .contact-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-float-hover);
+  }
+
+  .contact-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-accent-soft);
+    color: var(--color-or-700);
+  }
+
+  .contact-card-icon svg { width: 1.375rem; height: 1.375rem; }
+
+  .contact-card-label {
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .contact-card-value {
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    color: var(--color-ink);
+    /* Un numéro ou une adresse ne se coupe pas au milieu. */
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 40rem) {
+    .contact-card { max-width: 22rem; }
+  }
+
+  .location-frame { --ao-delay: 500ms; }
+
+  .location-map { margin-top: 3rem; }
+
+  .location-map-frame {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-float);
+  }
+
+  .location-map-frame iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .location-map-caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-top: 0.875rem;
+    font-size: var(--fs-caption);
+    color: var(--color-muted);
+  }
+
+  .location-map-link {
+    font-weight: var(--fw-semibold);
+    color: var(--color-or-700);
+    text-decoration: none;
+  }
+
+  .location-map-link:hover { text-decoration: underline; }
+
+  /* Sous 40rem la carte 16/9 devient une meurtrière : on la redresse. */
+  @media (max-width: 39.999rem) {
+    .location-map-frame { aspect-ratio: 4 / 3; }
+  }
 
   /* Le bandeau couchant. Une seule occurrence par page : répété, il perd son effet. */
   .couchant {

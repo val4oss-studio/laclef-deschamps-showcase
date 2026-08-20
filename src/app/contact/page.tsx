@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import type { Metadata } from 'next';
+import { ContactSection, LocationSection } from '@/app/component/section';
 import { site } from '@/config/site';
 
 export const metadata: Metadata = {
@@ -11,5 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage(): JSX.Element {
-  return <section id="contact" className="section section--first" />;
+  return (
+    <>
+      <ContactSection id="contact" />
+      <LocationSection id="localisation" />
+    </>
+  );
 }

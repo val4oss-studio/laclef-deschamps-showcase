@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import type { CSSProperties, JSX } from 'react';
 import Image from 'next/image';
 
 interface CardProps {
@@ -6,11 +6,25 @@ interface CardProps {
   description: string;
   image: string;
   imageAlt: string;
+  /**
+   * Rang de la carte dans sa grille, pour échelonner l'apparition.
+   * Omis, la carte apparaît sans décalage.
+   */
+  index?: number;
 }
 
-export function Card({ title, description, image, imageAlt }: CardProps): JSX.Element {
+export function Card({
+  title,
+  description,
+  image,
+  imageAlt,
+  index,
+}: CardProps): JSX.Element {
+  const style =
+    index === undefined ? undefined : ({ '--stagger-index': index } as CSSProperties);
+
   return (
-    <article className="card">
+    <article className="card" style={style}>
       <div className="card-media">
         <Image
           src={image}

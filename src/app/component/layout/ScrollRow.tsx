@@ -42,7 +42,9 @@ export function ScrollRow({
 }: ScrollRowProps): JSX.Element {
   const trackRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(true);
+  /* Optimiste : au rendu serveur on suppose qu'il y a de quoi défiler, sinon
+     les chevrons apparaîtraient après coup sur les bandeaux qui débordent. */
+  const [atEnd, setAtEnd] = useState(false);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -77,9 +79,15 @@ export function ScrollRow({
     track.scrollBy({ left: direction * step, behavior: 'smooth' });
   };
 
+  /* Les deux butées atteintes en même temps : le contenu tient sur une ligne. */
+  const isScrollable = !atStart || !atEnd;
+
   // Ordre du DOM = ordre des colonnes de la grille, et ordre de tabulation.
   return (
-    <div className={['scroll-row', className].filter(Boolean).join(' ')}>
+    <div
+      className={['scroll-row', className].filter(Boolean).join(' ')}
+      data-scrollable={isScrollable}
+    >
       <button
         type="button"
         className="scroll-row-arrow"

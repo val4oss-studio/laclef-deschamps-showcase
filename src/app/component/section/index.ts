@@ -1,5 +1,12 @@
 export { AboutSection } from './AboutSection';
 export { AvisSection } from './AvisSection';
+export { ContactSection } from './ContactSection';
 export { CouchantSection } from './CouchantSection';
+export { GallerySection } from './GallerySection';
 export { HeroSection } from './HeroSection';
+export { LocationSection } from './LocationSection';
+export { PrestationsSection } from './PrestationsSection';
 export { ServicesSection } from './ServicesSection';
+export { TarifsSection } from './TarifsSection';
+export { TeamSection } from './TeamSection';
+export { ZoneSection } from './ZoneSection';

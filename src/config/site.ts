@@ -12,6 +12,11 @@ export const site = {
     /* `tel:` n'accepte ni espace ni séparateur : le lien est stocké à part. */
     phoneHref: 'tel:+33660792923',
     email: 'contact@laclef-deschamps.fr',
+    city: 'Châtelaillon-Plage',
+    postalCode: '17340',
+    /* Centre-ville. TODO: recentrer sur l'adresse exacte une fois connue. */
+    latitude: 46.0725,
+    longitude: -1.0889,
   },
   locale: 'fr_FR',
   themeColor: '#281E73',
