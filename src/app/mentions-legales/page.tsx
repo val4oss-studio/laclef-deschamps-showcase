@@ -1,5 +1,7 @@
 import type { JSX } from 'react';
 import type { Metadata } from 'next';
+import { LegalSection } from '@/app/component/section';
+import { mentionsLegales } from '@/config/legal';
 import { site } from '@/config/site';
 
 export const metadata: Metadata = {
@@ -8,9 +10,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${site.url}/mentions-legales`,
   },
+  robots: { index: true, follow: false },
 };
 
-// TODO: gabarit vide — le contenu juridique reste à rédiger.
 export default function MentionsLegalesPage(): JSX.Element {
-  return <section id="mentions-legales" className="section section--first" />;
+  return <LegalSection id="mentions-legales" document={mentionsLegales} />;
 }

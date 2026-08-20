@@ -1777,6 +1777,72 @@
     .location-map-frame { aspect-ratio: 4 / 3; }
   }
 
+  /* ============================================================
+   * Pages légales — texte long, colonne étroite.
+   * ============================================================ */
+  .legal-updated {
+    font-size: var(--fs-caption);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .legal-intro { max-width: 62ch; }
+
+  .legal {
+    --ao-delay: 500ms;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    margin-top: 3.5rem;
+  }
+
+  .legal-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    /* 68 caractères : au-delà, l'œil perd la ligne suivante sur un texte
+       aussi dense. C'est la seule contrainte qui compte sur ces pages. */
+    max-width: 68ch;
+  }
+
+  .legal-title {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    letter-spacing: var(--ls-tight);
+    color: var(--color-ink);
+  }
+
+  .legal-text {
+    font-size: var(--fs-body);
+    line-height: var(--lh-loose);
+    color: var(--color-muted);
+  }
+
+  .legal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding-left: 1.25rem;
+    font-size: var(--fs-body);
+    line-height: var(--lh-loose);
+    color: var(--color-muted);
+  }
+
+  .legal-list li::marker { color: var(--color-accent); }
+
+  /* Un « [À COMPLÉTER] » publié en l'état sur une page légale est un
+     incident. Le corail est réservé à la ponctuation : c'est exactement ça. */
+  .legal-todo {
+    padding: 0.05em 0.3em;
+    border-radius: 3px;
+    background-color: var(--color-erreur-fond);
+    color: var(--color-erreur);
+    font-weight: var(--fw-semibold);
+  }
+
   /* Le bandeau couchant. Une seule occurrence par page : répété, il perd son effet. */
   .couchant {
     padding: 3.25rem 2.5rem;
