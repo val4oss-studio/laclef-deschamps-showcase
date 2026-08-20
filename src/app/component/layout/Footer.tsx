@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { legalLinks, navLinks } from '@/config/navigation';
+
+import { Horizon } from './Horizon';
 import { site } from '@/config/site';
 
 /** Taille source du badge ; le rendu est piloté par `.footer-logo`. */
@@ -11,8 +13,8 @@ const LOGO_SIZE = 256;
 export function Footer(): JSX.Element {
   return (
     <>
-      {/* Même filet or + demi-soleil que l'entrée en section « mer ». */}
-      <div className="horizon" aria-hidden="true" />
+      {/* Même entrée en section « mer » que sur la page d'accueil. */}
+      <Horizon />
 
       <footer className="footer">
         <div className="section-inner">

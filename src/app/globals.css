@@ -186,14 +186,20 @@
                  0 4px 6px -4px rgba(0,0,0,0.3);
   --shadow-gold: 0 0 0 4px var(--color-gold-tint-20);
 
-  /* Le dégradé du logo, du crème au corail. Une seule occurrence par page. */
-  --gradient-couchant: linear-gradient(
-    180deg,
+  /* Arrêts du couchant, isolés pour que le soleil et son reflet ne puissent
+     pas diverger : les deux dégradés ci-dessous les partagent. */
+  --couchant-stops:
     var(--color-creme)   0%,
     var(--color-soleil)  34%,
     var(--color-abricot) 64%,
-    var(--color-corail)  100%
-  );
+    var(--color-corail)  100%;
+
+  /* Le dégradé du logo, du crème au corail. Une seule occurrence par page. */
+  --gradient-couchant: linear-gradient(180deg, var(--couchant-stops));
+
+  /* Miroir : mêmes arrêts, angle inversé. Le corail qui touche l'eau sous le
+     soleil est exactement celui qui ouvre le reflet. */
+  --gradient-reflet: linear-gradient(0deg, var(--couchant-stops));
 
   /* Ombre directionnelle : lumière en haut à gauche, ombre projetée en bas à
      droite uniquement. Le flou reste inférieur ou égal au décalage (et le spread
@@ -345,23 +351,64 @@
   }
   .eyebrow--inverse { color: var(--color-or-300); }
  
-  /* Passage d'une section claire à une section « mer » :
-     un filet or surmonté d'un demi-soleil. */
+  /* Passage d'une section claire à une section « mer » : un demi-soleil posé
+     sur la ligne d'eau, et son reflet dispersé dessous. */
   .horizon {
+    --horizon-sun-width: 84px;
+    /* Hauteur totale du reflet : c'est sur elle qu'est étalé le dégradé
+       partagé par tous les traits. */
+    --horizon-reflection-height: 72px;
+
     position: relative;
+    /* `.section` est positionnée et vient après dans le DOM : sans ce cran,
+       elle recouvrirait purement et simplement le reflet. */
+    z-index: 1;
     height: 1px;
-    background-color: var(--color-or-400);
+    /* Corail au centre, là où le soleil touche l'eau, puis or, puis fondu :
+       la ligne rejoint la couleur du soleil au lieu de trancher avec, et ne
+       se termine plus par deux bouts francs. */
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-or-400) 22%,
+      var(--color-corail) 50%,
+      var(--color-or-400) 78%,
+      transparent 100%
+    );
   }
+
+  /* Le demi-soleil. Le dégradé est comprimé sur ses 42 px : crème au sommet,
+     corail au ras de l'eau. */
   .horizon::after {
     content: "";
     position: absolute;
     left: 50%;
     bottom: 0;
-    width: 84px;
-    height: 42px;
+    width: var(--horizon-sun-width);
+    height: calc(var(--horizon-sun-width) / 2);
     transform: translateX(-50%);
-    border-radius: 84px 84px 0 0;
-    background-color: var(--color-or-400);
+    border-radius: var(--horizon-sun-width) var(--horizon-sun-width) 0 0;
+    background-image: var(--gradient-couchant);
+  }
+
+  /* Un trait du reflet.
+     Le dégradé n'est pas coloré trait par trait — ce sont huit aplats que
+     l'œil lirait comme des barres. Chaque trait porte le MÊME dégradé,
+     dimensionné sur la hauteur totale du reflet puis remonté de sa propre
+     profondeur : il n'en révèle donc que sa tranche, et la nappe reste
+     continue d'un trait à l'autre. */
+  .horizon-glint {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--glint-offset) * 1px);
+    translate: -50% 0;
+    width: calc(var(--glint-width) * var(--horizon-sun-width) / 100);
+    height: calc(var(--glint-height) * 1px);
+    border-radius: var(--radius-pill);
+    opacity: var(--glint-opacity);
+    background-image: var(--gradient-reflet);
+    background-size: 100% var(--horizon-reflection-height);
+    background-position: 50% calc(var(--glint-offset) * -1px);
   }
  
   /* Barre de navigation principale — logo à gauche, liens à droite. */
