@@ -493,6 +493,12 @@
     pointer-events: none;
   }
 
+  /* Section chaude alternée : le sable d'un cran plus soutenu que le fond
+     de page, pour détacher un bloc sans quitter la livrée claire. */
+  .section--sable {
+    background-color: var(--color-section);
+  }
+
   /* Section « mer » : l'indigo profond. Seules les couleurs changent. */
   .section--sea {
     background-color: var(--color-inverse);

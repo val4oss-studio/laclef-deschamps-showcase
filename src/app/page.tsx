@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import {
   HeroSection,
-  ServicesSection,
+  AboutSection,
   AvisSection,
   CouchantSection,
 } from '@/app/component/section';
@@ -12,7 +12,7 @@ export default function HomePage(): JSX.Element {
       <HeroSection id="hero" />
       {/* Filet or + demi-soleil : passage de la section claire à la section « mer ». */}
       <div className="horizon" aria-hidden="true" />
-      <ServicesSection id="services" />
+      <AboutSection id="a-propos" />
       <AvisSection id="avis" />
       <CouchantSection id="contact" />
     </>
