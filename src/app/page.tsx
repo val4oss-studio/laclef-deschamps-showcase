@@ -8,7 +8,6 @@ export default function HomePage(): JSX.Element {
       {/* Filet or + demi-soleil : passage de la section claire à la section « mer ». */}
       <div className="horizon" aria-hidden="true" />
       <ServicesSection id="services" />
-      <AboutSection id="about" />
     </>
   );
 }

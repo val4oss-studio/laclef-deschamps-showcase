@@ -234,6 +234,43 @@
  * --------------- */
 
 @layer components {
+
+  /* Reveal animation */
+  .ao-animate,
+  .section-eyebrow,
+  .section-title,
+  .section-subtitle,
+  .section-lead,
+  .section-actions {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity
+        var(--transition-duration-slower)
+        var(--ease-out-smooth)
+        var(--ao-delay, 0ms),
+      transform
+        var(--transition-duration-slower)
+        var(--ease-out-smooth)
+        var(--ao-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  section.is-visible :is(
+    .ao-animate, .section-eyebrow, .section-title, .section-subtitle,
+    .section-lead, .section-actions
+  ) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Per-class delays — replaces the dead transition-delay declarations */
+  .section-eyebrow  { --ao-delay: 400ms; }
+  .section-title    { --ao-delay: 600ms; }
+  .section-subtitle { --ao-delay: 800ms; }
+  .section-lead     { --ao-delay: 1000ms; }
+  .section-actions  { --ao-delay: 1200ms; }
+
   /* Label en arc, façon « Châtelaillon-Plage » du badge */
   .eyebrow {
     display: inline-block;
@@ -435,7 +472,7 @@
     animation: var(--animate-fade-in-up);
   }
 
-  .section-eyebrow { animation: var(--animate-fade-in); }
+  /*.section-eyebrow { animation: var(--animate-fade-in); }*/
 
   .section-title {
     font-size: var(--fs-h2);
@@ -500,6 +537,11 @@
     }
   }
 
+  .card:nth-child(1) { --stagger-index: 0; }
+  .card:nth-child(2) { --stagger-index: 1; }
+  .card:nth-child(3) { --stagger-index: 2; }
+  .card:nth-child(4) { --stagger-index: 3; }
+
   /* Carte visuelle générique : image en haut, texte en dessous. */
   .card {
     display: flex;
@@ -508,12 +550,27 @@
     background-color: var(--color-surface);
     border: 1px solid var(--color-line);
     border-radius: var(--radius-card);
+    
+    /* État initial pour l'animation reveal */
+    opacity: 0;
+    translate: 0 1.5rem;
+    will-change: opacity, translate;
+    
+    --card-reveal-delay: calc(1000ms + var(--stagger-index, 0) * 150ms);
+
     transition:
-      border-color var(--transition-duration-base) var(--ease-out),
-      translate var(--transition-duration-base) var(--ease-out);
+      opacity      700ms var(--ease-out-smooth) var(--card-reveal-delay),
+      translate    700ms var(--ease-out-smooth) var(--card-reveal-delay),
+      border-color var(--transition-duration-base) var(--ease-out) 0s,
+      translate    var(--transition-duration-base) var(--ease-out) 0s;
+  }
+  section.is-visible .card {
+    opacity: 1;
+    translate: 0 0;
+    will-change: auto;
   }
 
-  .card:hover { translate: 0 -4px; }
+  .section.is-visible .card:hover { transform: translateY(-4px); }
 
   .card-media {
     position: relative;
@@ -587,5 +644,7 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-delay: 0s !important;
+    animation-delay: 0s !important;
   }
 }

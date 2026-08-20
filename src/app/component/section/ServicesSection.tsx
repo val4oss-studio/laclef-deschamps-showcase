@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 import { Card } from '@/app/component/ui';
 import { services } from '@/config/service';
+import { RevealSection } from '@/app/component/layout';
 
 interface ServicesSectionProps {
   id: string;
@@ -8,7 +9,7 @@ interface ServicesSectionProps {
 
 export function ServicesSection({ id }: ServicesSectionProps): JSX.Element {
   return (
-    <section id={id} className="section section--sea">
+    <RevealSection id={id} className="section section--sea">
       <div className="section-inner">
         <div className="section-content">
           <p className="eyebrow eyebrow--inverse section-eyebrow">Nos services</p>
@@ -26,6 +27,6 @@ export function ServicesSection({ id }: ServicesSectionProps): JSX.Element {
           ))}
         </div>
       </div>
-    </section>
+    </RevealSection>
   );
 }

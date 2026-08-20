@@ -2,6 +2,7 @@ import type { JSX } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { site } from '@/config/site';
+import { RevealSection } from '@/app/component/layout'
 
 interface HeroSectionProps {
   id: string;
@@ -9,7 +10,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ id }: HeroSectionProps): JSX.Element {
   return (
-    <section id={id} className="section section--first section--hero">
+    <RevealSection id={id} className="section section--first section--hero">
       <div className="section-inner section-inner--split">
         <div className="section-content">
           <p className="eyebrow section-eyebrow">Châtelaillon-Plage</p>
@@ -32,7 +33,7 @@ export function HeroSection({ id }: HeroSectionProps): JSX.Element {
         <div className="section-visual">
           <Image
             src="/brand/logo-1024.png"
-            alt=""
+            alt="Logo conciergerie familiale de Châtelaillon-Plage"
             width={1024}
             height={1024}
             className="section-logo"
@@ -40,6 +41,6 @@ export function HeroSection({ id }: HeroSectionProps): JSX.Element {
           />
         </div>
       </div>
-    </section>
+    </RevealSection>
   );
 }
