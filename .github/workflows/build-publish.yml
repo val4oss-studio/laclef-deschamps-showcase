@@ -27,9 +27,12 @@ jobs:
             VERSION="${GITHUB_REF#refs/tags/}"
             IS_TAG=true
           else
-            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-            OFFSET=$(git rev-list "${LAST_TAG}..HEAD" --count)
-            VERSION="${LAST_TAG}-${OFFSET}"
+            if LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null); then
+              OFFSET=$(git rev-list "${LAST_TAG}..HEAD" --count)
+              VERSION="${LAST_TAG}-${OFFSET}"
+            else
+              VERSION="0.0.0-$(git rev-list HEAD --count)"
+            fi
           fi
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "is_tag=${IS_TAG}" >> "$GITHUB_OUTPUT"
@@ -64,6 +67,6 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/laclef-deschamps:${{ steps.version.outputs.version }}
-            ghcr.io/${{ github.repository_owner }}/lavlef-deschamps:latest
+            ghcr.io/${{ github.repository_owner }}/laclef-deschamps:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
